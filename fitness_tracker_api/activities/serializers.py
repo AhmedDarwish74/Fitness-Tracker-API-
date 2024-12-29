@@ -5,7 +5,7 @@ from .models import User, Activity
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password']  # Fields to include in the serializer
+        fields = ['id', 'username', 'email', 'password']  # Fields to include
         extra_kwargs = {'password': {'write_only': True}}  # Ensure password is write-only
 
     def create(self, validated_data):

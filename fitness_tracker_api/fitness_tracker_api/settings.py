@@ -41,14 +41,23 @@ INSTALLED_APPS = [
     'activities',
     
 ]
+
+AUTH_USER_MODEL = 'activities.User'  # Use the custom User model
+
 # Django REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',  # Use JWT for authentication
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Only authenticated users can access the API
+        'rest_framework.permissions.IsAuthenticated',  # Only authenticated users can access
     ],
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Access token lifetime
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token lifetime
 }
 # Allowed hosts for deployment
 ALLOWED_HOSTS = ['*']  # Allow all hosts (update this for production)

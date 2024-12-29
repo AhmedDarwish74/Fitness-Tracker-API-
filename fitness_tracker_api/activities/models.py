@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Custom User model to extend the default Django User model
+# Custom User model extending Django's AbstractUser
 class User(AbstractUser):
     email = models.EmailField(unique=True)  # Ensure email is unique
     username = models.CharField(max_length=30, unique=True)  # Ensure username is unique

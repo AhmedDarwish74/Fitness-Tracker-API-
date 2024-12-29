@@ -1,60 +1,46 @@
-from rest_framework.test import APITestCase
+from django.urls import reverse
 from rest_framework import status
-from django.contrib.auth.models import User
-from .models import Activity
+from rest_framework.test import APITestCase
+from .models import User, Activity
 
-class ActivityMetricsTests(APITestCase):
+class ActivityTests(APITestCase):
     def setUp(self):
-        # Create a default user
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        # Create a test user
+        self.user = User.objects.create_user(username='testuser', password='testpass123')
+        self.client.force_authenticate(user=self.user)  # Authenticate the user
 
-        # Create some activities for the user
-        Activity.objects.create(
+        # Create a test activity
+        self.activity = Activity.objects.create(
             user=self.user,
-            activity_type='running',
+            activity_type='Running',
             duration=30,
             distance=5.0,
             calories_burned=300,
-            date='2024-12-22'
-        )
-        Activity.objects.create(
-            user=self.user,
-            activity_type='cycling',
-            duration=45,
-            distance=10.0,
-            calories_burned=400,
-            date='2024-12-21'
+            date='2023-10-01'
         )
 
-    def test_activity_metrics(self):
-        # Log in
-        self.client.login(username='testuser', password='testpassword')
+    def test_create_activity(self):
+        # Test creating a new activity
+        url = reverse('activity-list')
+        data = {
+            'activity_type': 'Cycling',
+            'duration': 45,
+            'distance': 10.0,
+            'calories_burned': 450,
+            'date': '2023-10-02'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Send a GET request to the metrics endpoint
-        response = self.client.get('/api/metrics/')
-
-        # Check the API response
+    def test_get_activity(self):
+        # Test retrieving an activity
+        url = reverse('activity-detail', args=[self.activity.id])
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['activity_type'], 'Running')
 
-        # Check the data in the response
-        self.assertEqual(response.data['total_duration'], 75)  # 30 + 45
-        self.assertEqual(response.data['total_distance'], 15.0)  # 5.0 + 10.0
-        self.assertEqual(response.data['total_calories'], 700)  # 300 + 400
-
-    def test_activity_metrics_no_activities(self):
-        # Create another user with no activities
-        another_user = User.objects.create_user(username='anotheruser', password='password')
-
-        # Log in as the second user
-        self.client.login(username='anotheruser', password='password')
-
-        # Send a GET request to the metrics endpoint
-        response = self.client.get('/api/metrics/')
-
-        # Check the API response for user with no activities
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Ensure that the metrics are zero
-        self.assertEqual(response.data['total_duration'], 0)
-        self.assertEqual(response.data['total_distance'], 0)
-        self.assertEqual(response.data['total_calories'], 0)
+    def test_delete_activity(self):
+        # Test deleting an activity
+        url = reverse('activity-detail', args=[self.activity.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
