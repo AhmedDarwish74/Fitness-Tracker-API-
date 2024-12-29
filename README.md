@@ -1,16 +1,14 @@
-Fitness Tracker API
-Overview
-The Fitness Tracker API is designed to allow users to manage their fitness activities, track progress, and analyze metrics. Built using Django and Django REST Framework, this API provides a comprehensive solution for fitness enthusiasts to log and monitor their activities.
+# Fitness Tracker API
 
-Features
-Activity Management: CRUD operations for fitness activities.
-User Management: Secure user registration, login, and activity ownership.
-Activity History View: Filter and sort activity logs by date or type.
-Metrics Summary: Aggregate data like total calories burned, distance covered, etc.
-Authentication: User authentication and authorization.
-Stretch Goals (Optional): Goal setting, leaderboards, and social sharing.
-Technologies
-Django
-Django REST Framework
-PostgreSQL (or SQLite for development)
-Deployed on Heroku (planned)
+This is a Django REST Framework (DRF) API for tracking fitness activities. It allows users to log, update, delete, and view their fitness activities.
+
+## Features
+- **User Authentication**: JWT-based authentication for secure access.
+- **Activity Management**: CRUD operations for fitness activities.
+- **Activity Metrics**: View total duration, distance, and calories burned.
+- **Filtering and Sorting**: Filter activities by type or date, and sort by duration or calories burned.
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AhmedDarwish74/Fitness-Tracker-API-.git

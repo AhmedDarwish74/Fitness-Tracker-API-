@@ -1,40 +1,29 @@
 from rest_framework import serializers
-from .models import Activity
-from django.contrib.auth.models import User
-from datetime import date
+from .models import User, Activity
 
+# Serializer for the User model
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username', 'email', 'password']  # Fields to include in the serializer
+        extra_kwargs = {'password': {'write_only': True}}  # Ensure password is write-only
 
+    def create(self, validated_data):
+        # Create a new user with the validated data
+        user = User.objects.create_user(**validated_data)
+        return user
+
+# Serializer for the Activity model
 class ActivitySerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-    formatted_date = serializers.SerializerMethodField()
-
     class Meta:
         model = Activity
-        fields = ['id', 'activity_type', 'duration', 'distance', 'calories_burned', 'date', 'formatted_date', 'user']
+        fields = ['id', 'user', 'activity_type', 'duration', 'distance', 'calories_burned', 'date']  # Fields to include
+        read_only_fields = ['user']  # Ensure user field is read-only
 
-    def get_formatted_date(self, obj):
-        return obj.date.strftime('%d-%m-%Y')
-
-    def validate_duration(self, value):
-        if value <= 0:
-            raise serializers.ValidationError("Duration must be a positive number.")
-        return value
-
-    def validate_distance(self, value):
-        if value <= 0:
-            raise serializers.ValidationError("Distance must be a positive number.")
-        return value
-
-    def validate_calories_burned(self, value):
-        if value < 0:
-            raise serializers.ValidationError("Calories burned cannot be negative.")
-        return value
-
-    def validate_date(self, value):
-        if value > date.today():
-            raise serializers.ValidationError("Date cannot be in the future.")
-        return value
+    def validate(self, data):
+        # Custom validation for duration and calories burned
+        if data['duration'] <= 0:
+            raise serializers.ValidationError("Duration must be greater than 0.")
+        if data['calories_burned'] <= 0:
+            raise serializers.ValidationError("Calories burned must be greater than 0.")
+        return data

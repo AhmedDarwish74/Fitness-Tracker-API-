@@ -2,15 +2,18 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import ActivityViewSet, activity_metrics
 
-# Initialize the router
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ActivityViewSet, ActivityMetricsView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+# Create a router for the ActivityViewSet
 router = DefaultRouter()
-router.register(r'activities', ActivityViewSet)
+router.register(r'activities', ActivityViewSet, basename='activity')
 
-# Define URL patterns
 urlpatterns = [
-    # Include all endpoints registered in the router
-    path('api/', include(router.urls)),  # CRUD operations for activities
-
-    # Custom endpoint for activity metrics
-    path('api/metrics/', activity_metrics, name='activity-metrics'),  # Summary metrics
+    path('', include(router.urls)),  # Include all ActivityViewSet URLs
+    path('metrics/', ActivityMetricsView.as_view({'get': 'list'}), name='activity-metrics'),  # Metrics endpoint
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # JWT token endpoint
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # JWT token refresh endpoint
 ]

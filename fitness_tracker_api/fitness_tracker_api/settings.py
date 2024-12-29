@@ -41,11 +41,17 @@ INSTALLED_APPS = [
     'activities',
     
 ]
+# Django REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Use JWT for authentication
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Only authenticated users can access the API
     ],
 }
+# Allowed hosts for deployment
+ALLOWED_HOSTS = ['*']  # Allow all hosts (update this for production)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
