@@ -16,11 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  # Django admin panel
-    path('api/', include('activities.urls')),  # Include app-level URLs
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # JWT token endpoint
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # JWT refresh token endpoint
+    # Path for the home page (root)
+    path('', lambda request: HttpResponse('<h1>Welcome to Fitness Tracker API!</h1><p>Use /api/ for API access.</p>'), name='home'),
+    
+    # Path for Django admin panel
+    path('admin/', admin.site.urls),
+
+    # Include the app-level URLs (activities)
+    path('api/', include('activities.urls')),  # Assuming 'activities' is the name of your app
+
+    # JWT token endpoint to obtain a pair of access and refresh tokens
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+
+    # JWT refresh token endpoint to refresh the access token
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

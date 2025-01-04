@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}  # Ensure password is write-only
 
     def create(self, validated_data):
-        # Create a new user with the validated data
+        # Create a new user with the validated data, using create_user to ensure password hashing
         user = User.objects.create_user(**validated_data)
         return user
 
@@ -26,4 +26,9 @@ class ActivitySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Duration must be greater than 0.")
         if data['calories_burned'] <= 0:
             raise serializers.ValidationError("Calories burned must be greater than 0.")
+        
+        # Additional validation for Weightlifting: Distance should not be provided
+        if data['activity_type'] == 'Weightlifting' and data.get('distance'):
+            raise serializers.ValidationError("Distance should not be provided for Weightlifting activities.")
+        
         return data

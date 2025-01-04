@@ -21,7 +21,7 @@ class ActivityTests(APITestCase):
 
     def test_create_activity(self):
         # Test creating a new activity
-        url = reverse('activity-list')
+        url = reverse('activity-list')  # Make sure 'activity-list' is registered in URLs
         data = {
             'activity_type': 'Cycling',
             'duration': 45,
@@ -30,17 +30,17 @@ class ActivityTests(APITestCase):
             'date': '2023-10-02'
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)  # Check if created
 
     def test_get_activity(self):
         # Test retrieving an activity
-        url = reverse('activity-detail', args=[self.activity.id])
+        url = reverse('activity-detail', args=[self.activity.id])  # Make sure 'activity-detail' is registered
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['activity_type'], 'Running')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)  # Check if OK
+        self.assertEqual(response.data['activity_type'], 'Running')  # Verify activity type
 
     def test_delete_activity(self):
         # Test deleting an activity
-        url = reverse('activity-detail', args=[self.activity.id])
+        url = reverse('activity-detail', args=[self.activity.id])  # Ensure the activity ID is passed correctly
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)  # Check if deleted
