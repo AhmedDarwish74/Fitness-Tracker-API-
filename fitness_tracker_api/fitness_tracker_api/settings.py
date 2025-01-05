@@ -15,7 +15,7 @@ SECRET_KEY = 'your-default-secret-key'  # This is a default key for local develo
 DEBUG = True  # Set to True for development mode to show detailed error messages.
 
 # List of host/domain names that this Django site can serve.
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # Allow requests only from localhost for local development.
+ALLOWED_HOSTS = ['ahmeddarwish774.pythonanywhere.com', '127.0.0.1']  # Allow requests only from localhost for local development.
 
 # Application definition
 INSTALLED_APPS = [
