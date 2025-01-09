@@ -21,7 +21,7 @@ from django.http import HttpResponse
 urlpatterns = [
     # Path for the home page (root)
     path('', lambda request: HttpResponse('<h1>Welcome to Fitness Tracker API!</h1><p>Use /api/ for API access.</p>'), name='home'),
-    
+
     # Path for Django admin panel
     path('admin/', admin.site.urls),
 
