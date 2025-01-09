@@ -1,21 +1,14 @@
-from django.urls import path
-from .views import ActivityViewSet, ActivityMetricsView, ExerciseViewSet
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import ExerciseViewSet, ActivityViewSet, ActivityMetricsView
 
-# Create a router instance
+# Create a router for the ViewSets
 router = DefaultRouter()
+router.register(r'exercises', ExerciseViewSet)  # Register the ExerciseViewSet
+router.register(r'activities', ActivityViewSet)  # Register the ActivityViewSet
 
-# Register the ActivityViewSet with the router
-router.register(r'activities', ActivityViewSet, basename='activity')
-
-# Register the ExerciseViewSet with the router
-router.register(r'exercises', ExerciseViewSet, basename='exercise')
-
-# Define urlpatterns for the app
+# Define the URL patterns
 urlpatterns = [
-    # Endpoint for activity metrics (total duration, calories, distance, etc.)
-    path('activities/metrics/', ActivityMetricsView.as_view({'get': 'list'}), name='activity-metrics'),
+    path('', include(router.urls)),  # Include the router URLs
+    path('activity-metrics/', ActivityMetricsView.as_view({'get': 'list'}), name='activity-metrics'),  # Custom endpoint for activity metrics
 ]
-
-# Add the router's URLs to the urlpatterns
-urlpatterns += router.urls
