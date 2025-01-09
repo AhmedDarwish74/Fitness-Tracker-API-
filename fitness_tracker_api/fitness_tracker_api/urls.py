@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     # Path for the home page (root)
@@ -28,10 +27,4 @@ urlpatterns = [
 
     # Include the app-level URLs (activities)
     path('api/', include('activities.urls')),  # Assuming 'activities' is the name of your app
-
-    # JWT token endpoint to obtain a pair of access and refresh tokens
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-
-    # JWT refresh token endpoint to refresh the access token
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
