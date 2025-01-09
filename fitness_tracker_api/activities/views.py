@@ -1,42 +1,45 @@
-from rest_framework import viewsets, permissions
-from .models import Activity
-from .serializers import ActivitySerializer
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Sum
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework import status
+from .models import Exercise, User, Activity
+from .serializers import ExerciseSerializer, UserSerializer, ActivitySerializer
 
-# ViewSet for managing activities (CRUD)
-class ActivityViewSet(viewsets.ModelViewSet):
-    queryset = Activity.objects.all()  # Default queryset for activities
-    serializer_class = ActivitySerializer  # Serializer to be used for activities
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can access
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]  # Enable filtering and ordering
-    filterset_fields = ['activity_type', 'date']  # Fields to filter by
-    ordering_fields = ['date', 'duration', 'calories_burned']  # Fields to order by
+# View for Exercise model
+class ExerciseList(APIView):
+    def get(self, request):
+        try:
+            exercises = Exercise.objects.all()
+            serializer = ExerciseSerializer(exercises, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def get_queryset(self):
-        # Filter the activities to show only those belonging to the logged-in user
-        return self.queryset.filter(user=self.request.user)
+    def post(self, request):
+        try:
+            serializer = ExerciseSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def perform_create(self, serializer):
-        # Automatically set the user to the logged-in user when creating an activity
-        serializer.save(user=self.request.user)
+# View for Activity model
+class ActivityList(APIView):
+    def get(self, request):
+        try:
+            activities = Activity.objects.all()
+            serializer = ActivitySerializer(activities, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# ViewSet for displaying activity metrics (e.g., total duration, calories burned)
-class ActivityMetricsView(viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can access
-
-    def list(self, request):
-        # Calculate the total duration, distance, and calories burned for the logged-in user
-        user_activities = Activity.objects.filter(user=request.user)
-        total_duration = user_activities.aggregate(Sum('duration'))['duration__sum'] or 0  # Total duration
-        total_distance = user_activities.aggregate(Sum('distance'))['distance__sum'] or 0  # Total distance
-        total_calories = user_activities.aggregate(Sum('calories_burned'))['calories_burned__sum'] or 0  # Total calories burned
-
-        # Return the metrics as a response
-        return Response({
-            'total_duration': total_duration,  # Total duration of all activities
-            'total_distance': total_distance,  # Total distance covered
-            'total_calories': total_calories,  # Total calories burned
-        })
+    def post(self, request):
+        try:
+            serializer = ActivitySerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
