@@ -106,10 +106,7 @@ SECURE_SSL_REDIRECT = not DEBUG  # Redirect HTTP to HTTPS in production.
 # Django REST framework settings for using JWT authentication.
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Use JWT for authentication.
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Only authenticated users can access the API.
+        'rest_framework.authentication.TokenAuthentication',
     ],
 }
 
