@@ -1,45 +1,34 @@
-from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Exercise, User, Activity
-from .serializers import ExerciseSerializer, UserSerializer, ActivitySerializer
+from .models import Exercise, Activity
+from .serializers import ExerciseSerializer, ActivitySerializer
 
-# View for Exercise model
-class ExerciseList(APIView):
-    def get(self, request):
-        try:
-            exercises = Exercise.objects.all()
-            serializer = ExerciseSerializer(exercises, many=True)
-            return Response(serializer.data)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# ViewSet for the Exercise model
+class ExerciseViewSet(viewsets.ModelViewSet):
+    queryset = Exercise.objects.all()  # Retrieve all exercises
+    serializer_class = ExerciseSerializer  # Use the ExerciseSerializer
 
-    def post(self, request):
-        try:
-            serializer = ExerciseSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# ViewSet for the Activity model
+class ActivityViewSet(viewsets.ModelViewSet):
+    queryset = Activity.objects.all()  # Retrieve all activities
+    serializer_class = ActivitySerializer  # Use the ActivitySerializer
 
-# View for Activity model
-class ActivityList(APIView):
-    def get(self, request):
+# Custom ViewSet for Activity Metrics
+class ActivityMetricsView(viewsets.ViewSet):
+    def list(self, request):
         try:
-            activities = Activity.objects.all()
-            serializer = ActivitySerializer(activities, many=True)
-            return Response(serializer.data)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Calculate total duration, calories burned, and distance
+            total_duration = sum(activity.duration for activity in Activity.objects.all())
+            total_calories = sum(activity.calories_burned for activity in Activity.objects.all())
+            total_distance = sum(activity.distance for activity in Activity.objects.all() if activity.distance is not None)
 
-    def post(self, request):
-        try:
-            serializer = ActivitySerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # Prepare the response data
+            metrics = {
+                "total_duration": total_duration,
+                "total_calories": total_calories,
+                "total_distance": total_distance,
+            }
+            return Response(metrics, status=status.HTTP_200_OK)  # Return the metrics
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # Handle any exceptions
